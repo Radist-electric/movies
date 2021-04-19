@@ -18,14 +18,17 @@ function storageAvailable(x) {
   }
 }
 
-const storageName = 'moviesData'
+const storageMoviesDataName = 'moviesData'
+const storagePaginationName = 'paginationData'
 let initMoviesData
+let initPaginationData
 if (isLocalStorage) {
-  initMoviesData = JSON.parse(localStorage.getItem(storageName))
+  initMoviesData = JSON.parse(localStorage.getItem(storageMoviesDataName))
+  initPaginationData = JSON.parse(localStorage.getItem(storagePaginationName))
 }
 if (!initMoviesData) {
   initMoviesData = {
-    hidden: [30592, 30593],
+    hidden: [],
     comments: [
       {
         id: 30581,
@@ -39,19 +42,22 @@ if (!initMoviesData) {
   }
 }
 
-// console.log('initMoviesData', initMoviesData)
-
-function App() {
-  const [moviesData, setMoviesData] = useState(initMoviesData)
-  const [movies, setMovies] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [pagination, setPagination] = useState({
+if (!initPaginationData) {
+  initPaginationData = {
     currentPage: 1,
     prevPage: 1,
     nextPage: 1,
     lastPage: 1,
     limit: 10
-  })
+  }
+}
+
+
+function App() {
+  const [moviesData, setMoviesData] = useState(initMoviesData)
+  const [pagination, setPagination] = useState(initPaginationData)
+  const [movies, setMovies] = useState(null)
+  const [loading, setLoading] = useState(false)
 
   // componentDidMount
   useEffect(() => {
@@ -79,13 +85,15 @@ function App() {
       setMovies(newMovies)
 
       const lastPage = Math.ceil(data.data.movie_count / pagination.limit)
-      setPagination({
+      const newPagination = {
         ...pagination,
         currentPage: page,
         nextPage: page === lastPage ? page : page + 1,
         prevPage: page === 1 ? 1 : page - 1,
         lastPage: lastPage
-      })
+      }
+      setPagination(newPagination)
+      localStorage.setItem(storagePaginationName, JSON.stringify(newPagination))
 
     } catch (e) {
       console.log('error', e)
@@ -99,12 +107,7 @@ function App() {
     try {
       const response = await fetch(url)
       const data = await response.json()
-
-      // if (!response.ok) {
-
-      // }
       setLoading(false)
-
       return data
 
     } catch (e) {
@@ -126,12 +129,11 @@ function App() {
       newInitMoviesData.hidden = newHidden
     }
     setMoviesData(newInitMoviesData)
-    // localStorage.setItem(storageName, JSON.stringify(newInitMoviesData))
+    localStorage.setItem(storageMoviesDataName, JSON.stringify(newInitMoviesData))
   }
 
   // Сменить страницу пагинации
   const paginationHandler = (page) => {
-    console.log('page', page)
     getMovies(page, pagination.limit)
   }
 
