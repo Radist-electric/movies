@@ -1,7 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap')
 $main-color: #1056ec
 
+*
+  box-sizing: border-box
+
 body
+  overflow-x: hidden
   font-family: 'Roboto', sans-serif
   color: #3C3C3C
 
@@ -24,6 +28,7 @@ input[type='button']
 .App
   max-width: 1200px
   width: 100%
+  padding: 0 15px
   margin: 0 auto
 
 .table
@@ -32,21 +37,21 @@ input[type='button']
   &__head
     display: flex
     justify-content: space-between
+    height: 50px
     background-color: $main-color
+    font-size: 20px
     color: #FFFFFF
     &__item
       display: flex
       justify-content: center
       align-items: center
-      height: 50px
-      font-size: 20px
       border-right: 1px solid #b5c2e0
       &:nth-child(1)
         width: 100px
       &:nth-child(2)
         width: 25%
       &:nth-child(3)
-        width: 65%
+        width: calc(75% - 100px)
   &__row
     display: flex
     justify-content: space-between
@@ -68,10 +73,12 @@ input[type='button']
         display: flex
         flex-direction: column
         width: 25%
+        padding: 0 5px
       &:nth-child(3)
         display: flex
         flex-direction: column
-        width: 65%
+        width: calc(75% - 100px)
+        padding: 0 5px
         font-size: 15px
       &__title
         margin: 0 0 10px 0
@@ -81,7 +88,7 @@ input[type='button']
       &__year
         margin: 0
         font-weight: 700
-      &__raiting
+      &__rating
         margin-top: 10px
         span
           font-size: 18px
@@ -93,6 +100,8 @@ input[type='button']
         opacity: 0.5
       &__synopsis
         margin: 0
+        &__title
+          display: none
       &__hide
         display: flex
         justify-content: flex-end
@@ -117,5 +126,5 @@ input[type='button']
   &__number
     text-align: center
 
-
 @import 'loader'
+@import 'media'
