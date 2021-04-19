@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Movies } from './components/movies'
+import { Pagination } from './components/pagination'
 import { Loader } from './components/loader'
 import 'normalize.css'
 import './sass/App.sass'
@@ -44,19 +45,26 @@ function App() {
   const [moviesData, setMoviesData] = useState(initMoviesData)
   const [movies, setMovies] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    prevPage: 1,
+    nextPage: 1,
+    lastPage: 1,
+    limit: 10
+  })
 
   // componentDidMount
   useEffect(() => {
-    getMovies(10)
+    getMovies(pagination.currentPage, pagination.limit)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
   // Получить список фильмов
-  const getMovies = async (limit) => {
-    const url = `https://yts.mx/api/v2/list_movies.json?limit=${limit}`
+  const getMovies = async (page, limit) => {
+    const url = `https://yts.mx/api/v2/list_movies.json?page=${page}&limit=${limit}`
     try {
       const data = await request(url)
-      // console.log('data', data)
+      console.log('data', data)
       const newMovies = data.data.movies.map((item) => {
         return {
           id: item.id,
@@ -69,6 +77,16 @@ function App() {
         }
       })
       setMovies(newMovies)
+
+      const lastPage = Math.ceil(data.data.movie_count / pagination.limit)
+      setPagination({
+        ...pagination,
+        currentPage: page,
+        nextPage: page === lastPage ? page : page + 1,
+        prevPage: page === 1 ? 1 : page - 1,
+        lastPage: lastPage
+      })
+
     } catch (e) {
       console.log('error', e)
     }
@@ -95,6 +113,7 @@ function App() {
     }
   }
 
+  // Скрыть/показать фильм
   const showHandler = (id, hide) => {
     const newInitMoviesData = JSON.parse(JSON.stringify(moviesData))
 
@@ -110,14 +129,21 @@ function App() {
     // localStorage.setItem(storageName, JSON.stringify(newInitMoviesData))
   }
 
+  // Сменить страницу пагинации
+  const paginationHandler = (page) => {
+    console.log('page', page)
+    getMovies(page, pagination.limit)
+  }
+
   return (
-    <div className="App">
+    <div className='App'>
       <h1>List of films</h1>
       <Movies
         movies={movies}
         moviesData={moviesData}
         showHandler={showHandler}
       />
+      <Pagination pagination={pagination} paginationHandler={paginationHandler} />
       {loading && <Loader />}
     </div>
   )

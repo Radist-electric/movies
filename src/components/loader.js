@@ -1,8 +1,10 @@
 export const Loader = () => {
 
   return (
-    <div className="spinner"><div className="load">
-      <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-    </div></div>
+    <div className="spinner">
+      <div className="loader">
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+      </div>
+    </div>
   )
 }

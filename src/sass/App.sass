@@ -1,23 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap')
+$main-color: #1056ec
 
 body
   font-family: 'Roboto', sans-serif
   color: #3C3C3C
 
+input[type='button']
+  height: 18px
+  padding: 0 5px
+  margin-left: 10px
+  border: none
+  border-radius: 3px
+  background-color: $main-color
+  color: #FFFFFF
+  font-size: 12px
+  line-height: 12px
+  outline: none
+  cursor: pointer
+  transition: all 0.3s
+  &:hover
+    background-color: darken($main-color, 10%)
+
 .App
   max-width: 1200px
   width: 100%
   margin: 0 auto
-
-.loader
-  position: absolute
-  top: 50%
-  left: 50%
-  transform: translate(-50%, -50%)
-  height: 100px
-  width: 100px
-  background-color: #f00
-  opacity: 0.3
 
 .table
   display: flex
@@ -25,7 +32,7 @@ body
   &__head
     display: flex
     justify-content: space-between
-    background-color: #1056ec
+    background-color: $main-color
     color: #FFFFFF
     &__item
       display: flex
@@ -91,21 +98,24 @@ body
         justify-content: flex-end
         margin-top: auto
         margin-bottom: 0
-        input
-          height: 18px
-          padding: 0 5px
-          margin-left: 10px
-          border: none
-          border-radius: 3px
-          background-color: #1056ec
-          color: #FFFFFF
-          font-size: 12px
-          line-height: 12px
-          outline: none
         &_hidden
           margin: 10px 0
 
-
+.pagination
+  display: flex
+  justify-content: center
+  margin: 20px 0
+  input[type='button']
+    height: 30px
+    min-width: 30px
+    margin: 0 2px
+    font-size: 14px
+  input[type='number']
+    outline: none
+    border: 1px solid $main-color
+    border-radius: 3px
+  &__number
+    text-align: center
 
 
 @import 'loader'
