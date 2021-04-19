@@ -24,7 +24,7 @@ if (isLocalStorage) {
 }
 if (!initMoviesData) {
   initMoviesData = {
-    hidden: [30585, 30586],
+    hidden: [30592, 30593],
     comments: [
       {
         id: 30581,
@@ -38,7 +38,7 @@ if (!initMoviesData) {
   }
 }
 
-console.log('initMoviesData', initMoviesData)
+// console.log('initMoviesData', initMoviesData)
 
 function App() {
   const [moviesData, setMoviesData] = useState(initMoviesData)
@@ -56,7 +56,7 @@ function App() {
     const url = `https://yts.mx/api/v2/list_movies.json?limit=${limit}`
     try {
       const data = await request(url)
-      console.log('data', data)
+      // console.log('data', data)
       const newMovies = data.data.movies.map((item) => {
         return {
           id: item.id,
@@ -95,10 +95,29 @@ function App() {
     }
   }
 
+  const showHandler = (id, hide) => {
+    const newInitMoviesData = JSON.parse(JSON.stringify(moviesData))
+
+    if (hide) {
+      newInitMoviesData.hidden.push(+id)
+    } else {
+      const newHidden = newInitMoviesData.hidden.filter((item) => {
+        return item !== +id
+      })
+      newInitMoviesData.hidden = newHidden
+    }
+    setMoviesData(newInitMoviesData)
+    // localStorage.setItem(storageName, JSON.stringify(newInitMoviesData))
+  }
+
   return (
     <div className="App">
       <h1>List of films</h1>
-      <Movies movies={movies} moviesData={moviesData}/>
+      <Movies
+        movies={movies}
+        moviesData={moviesData}
+        showHandler={showHandler}
+      />
       {loading && <Loader />}
     </div>
   )
