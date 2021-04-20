@@ -1,6 +1,9 @@
-export const Pagination = (props) => {
+import { useRef } from 'react'
 
-  // Переход по страницам пагинации кнопками
+export const Pagination = (props) => {
+  const input = useRef(null)
+
+  // Navigating through the pages with buttons
   const onClickHandler = (event) => {
     let page
     switch (event.target.name) {
@@ -24,7 +27,7 @@ export const Pagination = (props) => {
     }
   }
 
-  // сменить страницу на ту, которую ввели в поле ввода
+  // Go to the page entered in the input field 
   const handleKey = event => {
     if (event.key === 'Enter') {
       const number = event.target.value.replace(/-/g, '')
@@ -39,6 +42,7 @@ export const Pagination = (props) => {
         }
         if (page !== props.pagination.currentPage) {
           props.paginationHandler(page)
+          input.current.value = ''
         }
       }
     }
@@ -49,7 +53,7 @@ export const Pagination = (props) => {
       <div className='pagination'>
         <input type="button" className="pagination__button" onClick={onClickHandler} name='first' value='1' />
         <input type="button" className="pagination__button" onClick={onClickHandler} name='prev' value='&lt;' />
-        <input type="number" className="pagination__button" onKeyUp={handleKey} placeholder='№ страницы ' step='100' />
+        <input type="number" className="pagination__button" onKeyUp={handleKey} placeholder='№ страницы ' step='100' ref={input}/>
         <input type="button" className="pagination__button" onClick={onClickHandler} name='next' value='&gt;' />
         <input type="button" className="pagination__button" onClick={onClickHandler} name='last' value={props.pagination.lastPage} />
       </div>

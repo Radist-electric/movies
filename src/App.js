@@ -31,13 +31,21 @@ if (!initMoviesData) {
     hidden: [],
     comments: [
       {
-        id: 30581,
-        comment: ['Cool!', 'I didn&rsquo;t like']
+        id: 30650,
+        comments: ['Cool!', 'I dislike it(']
       },
       {
-        id: 30578,
-        comment: ['Delete this movie!', 'I want to watch &quot;the movie&quot; again!']
-      }
+        id: 30649,
+        comments: ['Delete this movie!', 'I want to watch the movie again!']
+      },
+      {
+        id: 30656,
+        comments: ['Delete this movie!', 'I want to watch the movie again!', 'Great film!', 'Its story of a couple of carnival folk and the jams they get themselves into is genuinely funny, and as the luckless sideshow barker and his half-fish half-girl partner, Red Skelton and Esther Williams are delightfully teamed.']
+      },
+      {
+        id: 30655,
+        comments: ['Delete this movie!', 'I want to watch the movie again!', 'The playing Is good, John Schlesingers direction (and his use of evocative backgrounds) is efficient. But the plot Is a bit frayed.', 'I really liked it!']
+      },
     ]
   }
 }
@@ -65,12 +73,11 @@ function App() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  // Получить список фильмов
+  // Get movie list
   const getMovies = async (page, limit) => {
     const url = `https://yts.mx/api/v2/list_movies.json?page=${page}&limit=${limit}`
     try {
       const data = await request(url)
-      console.log('data', data)
       const newMovies = data.data.movies.map((item) => {
         return {
           id: item.id,
@@ -87,21 +94,24 @@ function App() {
       const lastPage = Math.ceil(data.data.movie_count / pagination.limit)
       const newPagination = {
         ...pagination,
-        currentPage: page,
-        nextPage: page === lastPage ? page : page + 1,
-        prevPage: page === 1 ? 1 : page - 1,
+        currentPage: +page,
+        nextPage: page === lastPage ? page : +page + 1,
+        prevPage: page === 1 ? 1 : +page - 1,
         lastPage: lastPage
       }
+
       setPagination(newPagination)
-      localStorage.setItem(storagePaginationName, JSON.stringify(newPagination))
+
+      if (isLocalStorage) {
+        localStorage.setItem(storagePaginationName, JSON.stringify(newPagination))
+      }
 
     } catch (e) {
-      console.log('error', e)
+      console.error('error', e)
     }
   }
 
-
-  // Запрос на сервер
+  // Request to server
   const request = async (url) => {
     setLoading(true)
     try {
@@ -116,7 +126,7 @@ function App() {
     }
   }
 
-  // Скрыть/показать фильм
+  // Show/Hide a movie
   const showHandler = (id, hide) => {
     const newInitMoviesData = JSON.parse(JSON.stringify(moviesData))
 
@@ -128,22 +138,65 @@ function App() {
       })
       newInitMoviesData.hidden = newHidden
     }
+
     setMoviesData(newInitMoviesData)
-    localStorage.setItem(storageMoviesDataName, JSON.stringify(newInitMoviesData))
+
+    if (isLocalStorage) {
+      localStorage.setItem(storageMoviesDataName, JSON.stringify(newInitMoviesData))
+    }
+
   }
 
-  // Сменить страницу пагинации
+  // Change pagination page
   const paginationHandler = (page) => {
     getMovies(page, pagination.limit)
   }
 
+  // Add/remove comments
+  const commentsHandler = (id, action, index) => {
+    // action == true - add comment
+    // action == false - remove comment
+    let newInitMoviesData = JSON.parse(JSON.stringify(moviesData))
+
+    if (action) {
+      let newComment = newInitMoviesData.comments.filter((item) => {
+        return item.id === id
+      })
+      if (newComment.length) {
+        // if you need to add a comment to the existing ones
+        newComment[0].comments.push(index)
+      } else {
+        // else create the first comment
+        newComment = {
+          id: id,
+          comments: [index]
+        }
+        newInitMoviesData.comments.push(newComment)
+      }
+    } else {
+      // delete a comment
+      const newComment = newInitMoviesData.comments.filter((item) => {
+        return item.id === id
+      })
+      newComment[0].comments.splice(index, 1)
+    }
+
+    setMoviesData(newInitMoviesData)
+
+    if (isLocalStorage) {
+      localStorage.setItem(storageMoviesDataName, JSON.stringify(newInitMoviesData))
+    }
+
+  }
+
   return (
     <div className='App'>
-      <h1>List of films</h1>
+      <h1>List of movies</h1>
       <Movies
         movies={movies}
         moviesData={moviesData}
         showHandler={showHandler}
+        commentsHandler={commentsHandler}
       />
       <Pagination pagination={pagination} paginationHandler={paginationHandler} />
       {loading && <Loader />}
